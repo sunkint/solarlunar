@@ -34,6 +34,13 @@ var LUNAR_INFO = []int{
 	0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45,
 	0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0}
 
+type SplitLunar struct{
+	Year string `json:"year"`
+	Month string `json:"month"`
+	Day string `json:"day"`
+	Md string `json:"md"`
+}
+
 func LunarToSolar(date string, leapMonthFlag bool) string {
 	loc, _ := time.LoadLocation("Local")
 	lunarTime, err := time.ParseInLocation(DATELAYOUT, date, loc)
@@ -106,7 +113,7 @@ func LunarToSolar(date string, leapMonthFlag bool) string {
 	return myDate.Format(DATELAYOUT)
 }
 
-func SolarToChineseLuanr(date string) string {
+func SolarToChineseLunar(date string) string {
 	lunarYear, lunarMonth, lunarDay, leapMonth, leapMonthFlag := calculateLunar(date)
 	result := cyclical(lunarYear) + "年"
 	if leapMonthFlag && (lunarMonth == leapMonth) {
@@ -117,7 +124,27 @@ func SolarToChineseLuanr(date string) string {
 	return result
 }
 
-func SolarToSimpleLuanr(date string) string {
+func SolarToSplitLunar(date string) *SplitLunar {
+	lunarYear, lunarMonth, lunarDay, leapMonth, leapMonthFlag := calculateLunar(date)
+	year := cyclical(lunarYear)
+	month := CHINESENUMBERSPECIAL[lunarMonth - 1] + "月"
+	if leapMonthFlag && lunarMonth == leapMonth {
+		month = "闰" + month
+	}
+	day := chineseDayString(lunarDay)
+	md := month + day
+
+	result := SplitLunar{
+		Year:  year,
+		Month: month,
+		Day:   day,
+		Md:    md,
+	}
+
+	return &result
+}
+
+func SolarToSimpleLunar(date string) string {
 	lunarYear, lunarMonth, lunarDay, leapMonth, leapMonthFlag := calculateLunar(date)
 	result := strconv.Itoa(lunarYear) + "年"
 	if leapMonthFlag && (lunarMonth == leapMonth) {
@@ -136,7 +163,7 @@ func SolarToSimpleLuanr(date string) string {
 	return result
 }
 
-func SolarToLuanr(date string) (string,bool) {
+func SolarToLunar(date string) (string,bool) {
 	lunarYear, lunarMonth, lunarDay, leapMonth, leapMonthFlag := calculateLunar(date)
 	result := strconv.Itoa(lunarYear) + "-"
 	if lunarMonth < 10 {
