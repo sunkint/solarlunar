@@ -3,7 +3,7 @@ package festival
 import (
 	"fmt"
 	"github.com/bitly/go-simplejson"
-	"github.com/nosixtools/solarlunar"
+	"github.com/sunkint/solarlunar"
 	"io/ioutil"
 	"regexp"
 	"strconv"

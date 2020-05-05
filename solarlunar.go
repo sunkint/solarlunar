@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 var MIN_YEAR = 1900
@@ -125,12 +127,10 @@ func SolarToChineseLunar(date string) string {
 }
 
 func SolarToSplitLunar(date string) *SplitLunar {
-	lunarYear, lunarMonth, lunarDay, leapMonth, leapMonthFlag := calculateLunar(date)
+	lunarYear, lunarMonth, lunarDay, _, _ := calculateLunar(date)
 	year := cyclical(lunarYear)
+	year = strings.Split(year, "")[utf8.RuneCountInString(year) - 1]
 	month := CHINESENUMBERSPECIAL[lunarMonth - 1] + "月"
-	if leapMonthFlag && lunarMonth == leapMonth {
-		month = "闰" + month
-	}
 	day := chineseDayString(lunarDay)
 	md := month + day
 
